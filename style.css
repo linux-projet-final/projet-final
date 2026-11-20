@@ -1146,6 +1146,88 @@ input[type="range"]::-webkit-slider-thumb {
 }
 
 /* ==========================================================================
+   ÉQUIPE (MAXENCE BONVALLOT & MANECH BLOSSIER)
+   ========================================================================== */
+.team-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 26px;
+}
+
+.team-card {
+  padding: 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.team-card:hover {
+  transform: translateY(-6px);
+}
+
+.team-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.team-avatar {
+  width: 58px;
+  height: 58px;
+  border-radius: 16px;
+  display: grid;
+  place-items: center;
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 800;
+  font-size: 1.2rem;
+  color: #fff;
+  flex-shrink: 0;
+  box-shadow: 0 8px 24px rgba(168, 85, 247, 0.35);
+}
+
+.team-avatar.purple { background: linear-gradient(135deg, #9333ea, #6366f1); }
+.team-avatar.cyan { background: linear-gradient(135deg, #06b6d4, #3b82f6); }
+
+.team-header h3 {
+  font-size: 1.35rem;
+  margin-bottom: 4px;
+}
+
+.team-role {
+  display: inline-block;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #38bdf8;
+}
+
+.team-vocation {
+  font-size: 0.95rem;
+  color: var(--text-soft);
+  flex: 1;
+}
+
+.team-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.team-tags span {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.78rem;
+  font-weight: 600;
+  padding: 5px 12px;
+  border-radius: var(--radius-pill);
+  background: rgba(168, 85, 247, 0.14);
+  border: 1px solid rgba(192, 132, 252, 0.32);
+  color: #e9d5ff;
+}
+
+.team-kudos-btn {
+  align-self: flex-start;
+}
+
+/* ==========================================================================
    PÉTITION & DÉCISION FINALE
    ========================================================================== */
 .petition-card,
@@ -1547,6 +1629,7 @@ input[type="range"]::-webkit-slider-thumb {
   .pricing-grid { grid-template-columns: 1fr; }
   .pricing-card.featured { transform: none; }
   .testimonials-grid { grid-template-columns: 1fr; }
+  .team-grid { grid-template-columns: 1fr; }
   .timeline { grid-template-columns: 1fr; }
 }
 
