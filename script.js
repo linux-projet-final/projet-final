@@ -434,4 +434,37 @@
       }, 650);
     });
   });
+
+  /* ------------------------------------------------------------------------
+     9. ENCOURAGEMENTS INTERACTIFS POUR L'ÉQUIPE
+     ------------------------------------------------------------------------ */
+  const KUDOS_STORAGE_KEY = 'fuze_ece_b1_ia_team_kudos_v1';
+  let kudosState = { maxence: 12, manech: 12 };
+  try {
+    const storedKudos = JSON.parse(localStorage.getItem(KUDOS_STORAGE_KEY) || 'null');
+    if (storedKudos && typeof storedKudos === 'object') {
+      kudosState = { ...kudosState, ...storedKudos };
+    }
+  } catch {
+    // Ignore storage parse errors
+  }
+
+  document.querySelectorAll('.team-kudos-btn').forEach((btn) => {
+    const member = btn.dataset.member;
+    const countEl = btn.querySelector('.kudos-count');
+    if (!member || !countEl) return;
+
+    countEl.textContent = String(kudosState[member] || 0);
+
+    btn.addEventListener('click', () => {
+      kudosState[member] = (kudosState[member] || 0) + 1;
+      countEl.textContent = String(kudosState[member]);
+      try {
+        localStorage.setItem(KUDOS_STORAGE_KEY, JSON.stringify(kudosState));
+      } catch {
+        // Ignore storage quota errors
+      }
+      launchConfetti(18);
+    });
+  });
 })();
