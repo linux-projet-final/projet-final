@@ -1,4 +1,4 @@
-# projet-final
+# c'est le projet final
 
 # IMPORTANT : 
 Chaque tâche du projet suit ce circuit, sans exception :
