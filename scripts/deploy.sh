@@ -1,7 +1,6 @@
 #!/bin/bash
 # aller dans la racine
-cd "$(dirname "$0")/..
-" || exit 1
+cd "$(dirname "$0")/.." || exit 1
 # pull sur main
 git pull origin main
 # refait l'image
