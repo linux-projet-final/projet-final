@@ -1,33 +1,87 @@
-# c'est le projet final
+Installation sur un serveur neuf
 
-# IMPORTANT : 
-Chaque tâche du projet suit ce circuit, sans exception :
-1. Une issue qui décrit la tâche, attribuée à un
-membre.
-2. Une branche créée depuis main à jour, nommée type/numero-description , par exemple
-feat/3-script-deploy .
-3. Au moins 3 comm
-its au format type: description : feat: ... , fix: ... , docs: ... .
-4. Une pull request avec un titre clair, Closes #numero dans la description et un relecteur désigné.
-5. Une revue : le relecteur commente au moins une ligne et demande une modification
-(Request
-changes).
-6. Une correction : l'auteur pousse un nouveau comm
-it sur la même branche.
-7. L'approbation
-(
-Approve), puis la fusion en Squash and merge. L'issue se ferme et la branche est
-suppri
-mée automatiquement.
+si docker pas installer
 
-//
+sudo apt update && sudo apt install -y git curl docker.io
+sudo usermod -aG docker $USER && newgrp docker
 
-Ce site est voué à présenter les membres de l'équipe. 
 
-Nous sommes tous étudiants en IA, et ceci est le premier projet pour notre matière. 
+1. Cloner le dépôt
+bash
+mkdir -p ~/serveur
+cd ~/serveur
+git clone https://github.com/linux-projet-final/projet-final.git
+cd projet-final
+ls -l scripts/          #-rwxr-xr-x pour deploy.sh et stats.sh
 
-Vous y retrouverez les noms, prénoms, rôles et vocations de chacun. 
+Si les scripts ne sont pas exécutables : chmod +x scripts/*.sh
 
-Le groupe est composé des membres suivants :
-- Maxence Bonvallot
-- Manech Blossier
+2. Ajouter le domaine local
+bash
+echo "127.0.0.1 ramenez-julien-guichon.test" | sudo tee -a /etc/hosts
+3. Premier déploiement
+bash
+./scripts/deploy.sh
+
+Le script récupère main, reconstruit l'image projet-final, remplace le conteneur site sur le port 8081 et vérifie avec curl que le site répond.
+
+4. Vérifier
+bash
+curl http://ramenez-julien-guichon.test:8081
+Ouvrir le site en local
+Depuis le serveur (terminal)
+bash
+curl http://ramenez-julien-guichon.test:8081
+# ou
+curl http://localhost:8081
+Depuis un navigateur
+WSL : ouvrir directement http://localhost:8081 dans le navigateur Windows.
+Multipass (Mac) : récupérer l'IP de la VM, puis l'ouvrir dans le navigateur :
+bash
+multipass info serveur | grep IPv4      # ex. 192.168.252.7
+
+→ http://192.168.252.7:8081
+
+Pour utiliser le nom de domaine depuis le Mac, ajouter la ligne suivante dans le /etc/hosts du Mac (avec l'IP de la VM) :
+
+bash
+echo "192.168.252.7 ramenez-julien-guichon.test" | sudo tee -a /etc/hosts
+
+→ http://ramenez-julien-guichon.test:8081
+
+Sans le script (commandes Docker à la main)
+bash
+cd ~/serveur/projet-final
+docker build -t projet-final .                         # construit l'image
+docker rm -f site                                      # supprime l'ancien conteneur s'il existe
+docker run -d --name site -p 8081:80 projet-final      # lance le site sur le port 8081
+curl http://localhost:8081                             # vérifie qu'il répond
+Les scripts
+scripts/deploy.sh : déployer le site
+se place dans le dépôt et récupère les dernières modifications (git pull) ;
+reconstruit l'image projet-final ;
+supprime l'ancien conteneur site et en relance un nouveau sur le port 8081 ;
+vérifie avec curl que le site répond : affiche Déploiement réussi, sinon un message d'échec et exit 1.
+bash
+./scripts/deploy.sh
+
+Bonus : commande deployer. Pour lancer le déploiement depuis n'importe quel dossier :
+
+bash
+echo "alias deployer='~/serveur/projet-final/scripts/deploy.sh'" >> ~/.bashrc
+source ~/.bashrc
+deployer
+scripts/stats.sh : analyser la fréquentation
+
+Lit le journal Apache du conteneur (docker logs site 2>/dev/null) et affiche, avec des pipes (grep, cut, sort, uniq -c, sort -rn, head) :
+
+le nombre de requêtes ;
+le nombre d'erreurs 404 ;
+l'IP la plus active ;
+la page la plus demandée.
+
+Si le conteneur n'existe pas ou n'a reçu aucune visite, il affiche un message clair et s'arrête avec exit 1.
+
+bash
+./scripts/stats.sh            # conteneur "site" par défaut
+./scripts/stats.sh autre-nom  # bonus : nom du conteneur en a
