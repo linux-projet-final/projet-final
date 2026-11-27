@@ -1,87 +1,35 @@
-Installation sur un serveur neuf
+Le projet est une requête à notre bien aimé et dévoué professeur M. le grand et l'unique Abdellaoui Léo (développeur paladium, nations glory et ami de Julien Guichon 28 ans).
 
-si docker pas installer
+La requête étant la suivante: 
+Ramener FuzeIII (Julien Guichon 28 ans) à l'école (l'école ECE, dans laquelle nous étudions(travaillons)).
 
-sudo apt update && sudo apt install -y git curl docker.io
+
+Pour installer le site sur un serveur neuf, il faut suivre les étapes suivantes: 
+
+Prérequis-Installer docker: 
+sudo apt update && sudo apt install -y git docker.io curl
 sudo usermod -aG docker $USER && newgrp docker
 
-
-1. Cloner le dépôt
-bash
-mkdir -p ~/serveur
-cd ~/serveur
+I- Cloner le dêpot et accéder au projet: 
 git clone https://github.com/linux-projet-final/projet-final.git
 cd projet-final
-ls -l scripts/          #-rwxr-xr-x pour deploy.sh et stats.sh
+  pour vérifier avec cette commande, il doit apparaitre "-rwxr-xr-x" devant "deploy.sh" et "stats.sh"
+ls -l scripts/   
 
-Si les scripts ne sont pas exécutables : chmod +x scripts/*.sh
-
-2. Ajouter le domaine local
-bash
+II- configurer le nom de domaine local:
 echo "127.0.0.1 ramenez-julien-guichon.test" | sudo tee -a /etc/hosts
-3. Premier déploiement
-bash
+  pour vérifier la dernière ligne doit etre "127.0.0.1 ramenez-julien-guichon.test"
+tail -n 1 /etc/hosts
+
+III- déployer le site avec deploy.sh:
 ./scripts/deploy.sh
 
-Le script récupère main, reconstruit l'image projet-final, remplace le conteneur site sur le port 8081 et vérifie avec curl que le site répond.
+IV- Simuler une requête et vérifier stats.sh:
+curl -s http://<votre-equipe>.test:8081 | head -n 10
+  pour afficher le compteur de requête: 
+./scripts/stats.sh
 
-4. Vérifier
-bash
-curl http://ramenez-julien-guichon.test:8081
-Ouvrir le site en local
-Depuis le serveur (terminal)
-bash
-curl http://ramenez-julien-guichon.test:8081
-# ou
-curl http://localhost:8081
-Depuis un navigateur
-WSL : ouvrir directement http://localhost:8081 dans le navigateur Windows.
-Multipass (Mac) : récupérer l'IP de la VM, puis l'ouvrir dans le navigateur :
-bash
-multipass info serveur | grep IPv4      # ex. 192.168.252.7
 
-→ http://192.168.252.7:8081
-
-Pour utiliser le nom de domaine depuis le Mac, ajouter la ligne suivante dans le /etc/hosts du Mac (avec l'IP de la VM) :
-
-bash
-echo "192.168.252.7 ramenez-julien-guichon.test" | sudo tee -a /etc/hosts
-
-→ http://ramenez-julien-guichon.test:8081
-
-Sans le script (commandes Docker à la main)
-bash
-cd ~/serveur/projet-final
-docker build -t projet-final .                         # construit l'image
-docker rm -f site                                      # supprime l'ancien conteneur s'il existe
-docker run -d --name site -p 8081:80 projet-final      # lance le site sur le port 8081
-curl http://localhost:8081                             # vérifie qu'il répond
-Les scripts
-scripts/deploy.sh : déployer le site
-se place dans le dépôt et récupère les dernières modifications (git pull) ;
-reconstruit l'image projet-final ;
-supprime l'ancien conteneur site et en relance un nouveau sur le port 8081 ;
-vérifie avec curl que le site répond : affiche Déploiement réussi, sinon un message d'échec et exit 1.
-bash
-./scripts/deploy.sh
-
-Bonus : commande deployer. Pour lancer le déploiement depuis n'importe quel dossier :
-
-bash
-echo "alias deployer='~/serveur/projet-final/scripts/deploy.sh'" >> ~/.bashrc
-source ~/.bashrc
-deployer
-scripts/stats.sh : analyser la fréquentation
-
-Lit le journal Apache du conteneur (docker logs site 2>/dev/null) et affiche, avec des pipes (grep, cut, sort, uniq -c, sort -rn, head) :
-
-le nombre de requêtes ;
-le nombre d'erreurs 404 ;
-l'IP la plus active ;
-la page la plus demandée.
-
-Si le conteneur n'existe pas ou n'a reçu aucune visite, il affiche un message clair et s'arrête avec exit 1.
-
-bash
-./scripts/stats.sh            # conteneur "site" par défaut
-./scripts/stats.sh autre-nom  # bonus : nom du conteneur en a
+Répartition des tâches:
+Maxence s'est occupé de développer le serveur et les scripts.
+Manech s'est occupé de la partie github, rulesets et de l'automatisation du workflow
